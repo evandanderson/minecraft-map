@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Update the package list and install the required packages
-sudo apt-get update
-sudo apt-get install -y
-sudo apt-get install lftp -y
+apt-get update
+apt-get install -y
+apt-get install lftp -y
 
 # Install Azure CLI
 if ! command -v az &> /dev/null; then
-    curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+    curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 fi
 
 # Install Unmined CLI
