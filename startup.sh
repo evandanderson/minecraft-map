@@ -20,3 +20,6 @@ fi
 
 # Login to Azure as the system-assigned managed identity
 az login --identity
+
+# Start the server
+gunicorn --bind=0.0.0.0 --timeout 600 app:app
