@@ -15,7 +15,9 @@ if ! command -v unmined-cli &> /dev/null; then
     wget -O /home/unmined-cli_0.19.37-dev_linux-x64.tar.gz https://unmined.net/download/unmined-cli-linux-x64-dev/
     tar -zxvf /home/unmined-cli_0.19.37-dev_linux-x64.tar.gz -C /home
     rm /home/unmined-cli_0.19.37-dev_linux-x64.tar.gz
-    export PATH="$PATH:/home/unmined-cli_0.19.37-dev_linux-x64"
+
+    echo "export PATH=$PATH:/home/unmined-cli_0.19.37-dev_linux-x64" | tee -a /etc/environment > /dev/null
+    source /etc/environment
 fi
 
 # Login to Azure as the system-assigned managed identity
