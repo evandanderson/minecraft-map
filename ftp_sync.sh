@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Temporary fix
+export PATH="$PATH:/home/unmined-cli_0.19.37-dev_linux-x64"
+
 excluded_dirs=("cache" "libraries" "versions")
 secretNames=("FTP_HOSTNAME_SECRET" "FTP_USERNAME_SECRET" "FTP_PASSWORD_SECRET")
 
@@ -34,4 +37,4 @@ if [[ $? -ne 0 ]]; then
 fi
 
 # Render the map
-unmined-cli web render --world "$MOUNT_PATH/world" --output "$RENDER_OUTPUT"
+unmined-cli web render --world "$MOUNT_PATH/world" --output "$RENDER_OUTPUT_PATH"
