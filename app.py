@@ -17,11 +17,15 @@ def index():
     )
 
 
-@app.route("/<filename>")
+@app.route("/<path:filename>")
 def serve_file(filename):
     mime_types = {
         ".js": "application/javascript",
         ".html": "text/html",
+        ".css": "text/css",
+        ".png": "image/png",
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
     }
 
     _, file_extension = os.path.splitext(filename)
