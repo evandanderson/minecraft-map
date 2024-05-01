@@ -20,12 +20,27 @@ app = Flask(__name__)
 
 
 @app.route("/")
-@app.route("/<string:world>")
-def render_world(world="overworld"):
-    if (world_path := WORLDS.get(world)) is None:
-        return "Invalid world", 404
+def render_world():
     return send_from_directory(
-        os.path.join(RENDER_OUTPUT_PATH, world_path),
+        os.path.join(RENDER_OUTPUT_PATH, "world"),
+        "unmined.index.html",
+        mimetype="text/html",
+    )
+
+
+@app.route("/nether")
+def render_world_nether():
+    return send_from_directory(
+        os.path.join(RENDER_OUTPUT_PATH, "world_nether"),
+        "unmined.index.html",
+        mimetype="text/html",
+    )
+
+
+@app.route("/end")
+def render_world_the_end():
+    return send_from_directory(
+        os.path.join(RENDER_OUTPUT_PATH, "world_the_end"),
         "unmined.index.html",
         mimetype="text/html",
     )
@@ -37,12 +52,12 @@ def serve_file(filename):
     mime_type = MIME_TYPES.get(file_extension, "text/plain")
 
     return send_from_directory(
-        os.path.join(RENDER_OUTPUT_PATH, "world", filename), mimetype=mime_type
+        os.path.join(RENDER_OUTPUT_PATH, "world"), filename, mimetype=mime_type
     )
 
 
 @app.route("/<string:world>/<path:filename>")
-def serve_file(world, filename):
+def serve_world_file(world, filename):
     if (world_path := WORLDS.get(world)) is None:
         return "Invalid world", 404
 
@@ -50,7 +65,7 @@ def serve_file(world, filename):
     mime_type = MIME_TYPES.get(file_extension, "text/plain")
 
     return send_from_directory(
-        os.path.join(RENDER_OUTPUT_PATH, world_path, filename), mimetype=mime_type
+        os.path.join(RENDER_OUTPUT_PATH, world_path), filename, mimetype=mime_type
     )
 
 
