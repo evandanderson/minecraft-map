@@ -6,18 +6,26 @@ from flask import (
 )
 
 RENDER_OUTPUT_PATH = os.environ.get("RENDER_OUTPUT_PATH")
+MIME_TYPES = {
+    ".js": "application/javascript",
+    ".html": "text/html",
+    ".css": "text/css",
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+}
+WORLDS = {"overworld": "world", "nether": "world_nether", "end": "world_the_end"}
 
 app = Flask(__name__)
 
 
+@app.route("/")
 @app.route("/<string:world>")
-def render_world(world):
-    worlds = {
-        "nether": "world_nether",
-        "end": "world_the_end",
-    }
+def render_world(world="overworld"):
+    if (world_path := WORLDS.get(world)) is None:
+        return "Invalid world", 404
     return send_from_directory(
-        os.path.join(RENDER_OUTPUT_PATH, worlds.get(world, "world")),
+        os.path.join(RENDER_OUTPUT_PATH, world_path),
         "unmined.index.html",
         mimetype="text/html",
     )
@@ -25,19 +33,25 @@ def render_world(world):
 
 @app.route("/<path:filename>")
 def serve_file(filename):
-    mime_types = {
-        ".js": "application/javascript",
-        ".html": "text/html",
-        ".css": "text/css",
-        ".png": "image/png",
-        ".jpg": "image/jpeg",
-        ".jpeg": "image/jpeg",
-    }
+    _, file_extension = os.path.splitext(filename)
+    mime_type = MIME_TYPES.get(file_extension, "text/plain")
+
+    return send_from_directory(
+        os.path.join(RENDER_OUTPUT_PATH, "world", filename), mimetype=mime_type
+    )
+
+
+@app.route("/<string:world>/<path:filename>")
+def serve_file(world, filename):
+    if (world_path := WORLDS.get(world)) is None:
+        return "Invalid world", 404
 
     _, file_extension = os.path.splitext(filename)
-    mime_type = mime_types.get(file_extension, "text/plain")
+    mime_type = MIME_TYPES.get(file_extension, "text/plain")
 
-    return send_from_directory(RENDER_OUTPUT_PATH, filename, mimetype=mime_type)
+    return send_from_directory(
+        os.path.join(RENDER_OUTPUT_PATH, world_path, filename), mimetype=mime_type
+    )
 
 
 @app.route("/favicon.ico")
