@@ -37,4 +37,8 @@ if [[ $? -ne 0 ]]; then
 fi
 
 # Render the map
-unmined-cli web render --world "$MOUNT_PATH/world" --output "$RENDER_OUTPUT_PATH"
+unmined-cli web render --world "$MOUNT_PATH/world" --output "$RENDER_OUTPUT_PATH/world" --players
+
+unmined-cli web render --world "$MOUNT_PATH/world_nether" --dimension nether --topY 61 --output "$RENDER_OUTPUT_PATH/world_nether" --players --background "#651818"
+
+unmined-cli web render --world "$MOUNT_PATH/world_the_end" --dimension end --output "$RENDER_OUTPUT_PATH/world_the_end" --players --background "#000000"
