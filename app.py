@@ -10,10 +10,16 @@ RENDER_OUTPUT_PATH = os.environ.get("RENDER_OUTPUT_PATH")
 app = Flask(__name__)
 
 
-@app.route("/")
-def index():
+@app.route("/<string:world>")
+def render_world(world):
+    worlds = {
+        "nether": "world_nether",
+        "end": "world_the_end",
+    }
     return send_from_directory(
-        RENDER_OUTPUT_PATH, "unmined.index.html", mimetype="text/html"
+        os.path.join(RENDER_OUTPUT_PATH, worlds.get(world, "world")),
+        "unmined.index.html",
+        mimetype="text/html",
     )
 
 
