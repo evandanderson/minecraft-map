@@ -1,4 +1,5 @@
 import os
+from datetime import datetime, timezone
 
 from flask import (
     Flask,
@@ -6,6 +7,7 @@ from flask import (
 )
 
 RENDER_OUTPUT_PATH = os.environ.get("RENDER_OUTPUT_PATH")
+RENDER_INTERVAL_TIME = int(os.environ.get("RENDER_INTERVAL_TIME"))
 MIME_TYPES = {
     ".js": "application/javascript",
     ".html": "text/html",
@@ -17,6 +19,16 @@ MIME_TYPES = {
 WORLDS = {"overworld": "world", "nether": "world_nether", "end": "world_the_end"}
 
 app = Flask(__name__)
+
+
+@app.after_request
+def set_cache_control(response):
+    now = datetime.now(timezone.utc)
+    next_interval = (now.timestamp() // RENDER_INTERVAL_TIME + 1) * RENDER_INTERVAL_TIME
+    max_age = int(next_interval - now.timestamp())
+    response.headers["Cache-Control"] = f"public, max-age={max_age}"
+
+    return response
 
 
 @app.route("/")

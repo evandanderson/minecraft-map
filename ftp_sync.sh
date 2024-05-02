@@ -5,6 +5,7 @@ export PATH="$PATH:/home/unmined-cli_0.19.37-dev_linux-x64"
 
 excluded_dirs=("cache" "libraries" "versions")
 secretNames=("FTP_HOSTNAME_SECRET" "FTP_USERNAME_SECRET" "FTP_PASSWORD_SECRET")
+config_file="worlds.json"
 
 declare -A secrets
 
@@ -36,9 +37,20 @@ if [[ $? -ne 0 ]]; then
     exit 1
 fi
 
-# Render the map
-unmined-cli web render --world "$MOUNT_PATH/world" --output "$RENDER_OUTPUT_PATH/world" --players
+# Render the maps and edit the file paths to be served correctly
+worlds=$(jq -r 'keys[]' $config_file)
 
-unmined-cli web render --world "$MOUNT_PATH/world_nether" --dimension nether --topY 61 --output "$RENDER_OUTPUT_PATH/world_nether" --players --background "#651818"
-
-unmined-cli web render --world "$MOUNT_PATH/world_the_end" --dimension end --output "$RENDER_OUTPUT_PATH/world_the_end" --players --background "#000000"
+for world in $worlds; do
+    options_keys=$(jq -r --arg world "$world" '.[$world].options | keys[]' $config_file)
+    options=""
+    for key in $options_keys; do
+        value=$(jq -r --arg world "$world" --arg key "$key" '.[$world].options[$key]' $config_file)
+        options+="--$key $value "
+    done
+    path=$(jq -r --arg world "$world" '.[$world].path' $config_file)
+    eval "unmined-cli web render $options"
+    find "$RENDER_OUTPUT_PATH/$world" -name "unmined.index.html" -type f -exec sed -i 's|<title>.*</title>|<title>Iriserver</title>|g' {} \;
+    find "$RENDER_OUTPUT_PATH/$world" -name "unmined.index.html" -type f -exec sed -i "s|src=\"unmined|src=\"$path/unmined|g" {} \;
+    find "$RENDER_OUTPUT_PATH/$world" -name "unmined.openlayers.js" -type f -exec sed -i "s|tiles/zoom|$path/tiles/zoom|g" {} \;
+    find "$RENDER_OUTPUT_PATH/$world" -name "unmined.openlayers.js" -type f -exec sed -i "s|playerimages|$path/playerimages|g" {} \;
+done
