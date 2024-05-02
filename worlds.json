@@ -3,7 +3,8 @@
         "options": {
             "world": "\"$MOUNT_PATH/world\"",
             "output": "\"$RENDER_OUTPUT_PATH/world\"",
-            "players": ""
+            "players": "",
+            "zoomin": "1"
         },
         "path": "overworld"
     },
