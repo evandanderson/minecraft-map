@@ -24,11 +24,21 @@ done
 
 excludes=$(for dir in "${excluded_dirs[@]}"; do echo -n "--exclude $dir "; done)
 
+# Split FTP_HOSTNAME_SECRET into hostname and port if port is specified
+if [[ "${secrets["FTP_HOSTNAME_SECRET"]}" == *:* ]]; then
+    IFS=':' read -r hostname port <<< "${secrets["FTP_HOSTNAME_SECRET"]}"
+else
+    hostname="${secrets["FTP_HOSTNAME_SECRET"]}"
+    port=""
+fi
+
+excludes=$(for dir in "${excluded_dirs[@]}"; do echo -n "--exclude $dir "; done)
+
 # Sync the FTP server with the local directory
 lftp -e "set ftp:ssl-force true;\
 set ftp:ssl-protect-data true;\
 set ssl:verify-certificate no;\
-open -u '${secrets["FTP_USERNAME_SECRET"]}','${secrets["FTP_PASSWORD_SECRET"]}' '${secrets["FTP_HOSTNAME_SECRET"]}';\
+open -u${port:+ -p $port} '${secrets["FTP_USERNAME_SECRET"]}','${secrets["FTP_PASSWORD_SECRET"]}' '${hostname}';\
 mirror --only-newer --verbose $excludes --parallel=10 / $MOUNT_PATH;\
 exit"
 
