@@ -32,7 +32,7 @@ def replace_html_title(file_path: str, title: str) -> None:
         f.write(content)
 
 
-def prefix_path_for_files(path_prefix: str) -> None:
+def prepare_files(path_prefix: str) -> None:
     for root, _, files in os.walk(os.path.join(RENDER_OUTPUT_PATH, path_prefix)):
         for file in files:
             file_path = os.path.join(root, file)
@@ -61,7 +61,7 @@ def render_worlds():
             )
         except subprocess.CalledProcessError as e:
             print(f"{world.get("path")} failed to render.", e.stderr)
-        prefix_path_for_files(world.get("path"))
+        prepare_files(world.get("path"))
         print(f"{world.get("path")} rendered successfully.")
 
 
