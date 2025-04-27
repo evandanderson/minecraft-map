@@ -14,5 +14,8 @@ if [ ! -d "/home/unmined-cli_${VERSION}_linux-x64" ]; then #TODO: fix this lol
     rm "/home/unmined-cli_${VERSION}_linux-x64.tar.gz"
 fi
 
+# Create lftp log directory if it doesn't exist
+mkdir -p "${MOUNT_PATH}/lftp-logs"
+
 # Add Unmined CLI to PATH
 export PATH="$PATH:/home/unmined-cli_${VERSION}_linux-x64"
